@@ -1,0 +1,18 @@
+public class CreateInvoice {
+    @AuraEnabled(cacheable = false)
+    public static sObject createInvoiceFromLineItem(Id recordId, 
+                                                    String invoiceDate,
+                                                    String invoiceDueDate, 
+                                                    String childRelationshipName, 
+                                                    String lineItemDescription, 
+                                                    String lineItemQuantity, 
+                                                    String lineItemUnitPrice){
+                                                        Schema.SObjectType record = recordId.getsobjecttype();
+                                                        String objName = record.getDescribe().getName();
+                                                        
+                                                        String childQuery = '(Select Id,' + lineItemDescription +','+ lineItemQuantity +','+ lineItemUnitPrice +' from '+ childRelationshipName +')';
+                                                        String parentQuery = 'select Id,'+invoiceDate+','+invoiceDueDate+','+childQuery+' from ' + objName + ' where Id =: recordId';
+                                                        sObject obj= Database.query(parentQuery);
+                                                        return obj;
+                                                    }
+}
